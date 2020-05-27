@@ -5,7 +5,7 @@
 
 
 ### Hardware Setup
-There are 9 possible midi controllers on GT-8 floor board each one of them can be used in a variety of ways to achieve a looper like feel.
+There are 9 possible midi controllers on GT-8 floor board ,each one of them can be used in a variety of ways to achieve a looper like feel.
 1. Bank Up 
 2. Bank Down
 3. Patch Selectors *4
@@ -51,9 +51,36 @@ Program:
 
 ### Other hardware settings :
 * Set to immediate for sys bank response
-* Exp pedal switch caliberate to low force and set it to  wah toggle
+* Exp pedal switch calibrate to low force and set it to  wah toggle
 * Set CTRL to amp toggle
 * Set the patch range between 1-36 ie user modes only (makes life to over write patches as per requirements if needed)
 
+### Finite Automata Table
+
+State machine for running the looper. Below table explains the corresponding action committed.
 
 
+| State-Action  | Stop      | Record/Overdub | Play/loop | Rhythm-Switch |
+|---------------|-----------|----------------|-----------|---------------|
+| Bank UP       | AutoStart | AutoStop       | MuteLayer | SelectRhythm  |
+| Bank Down     | RollnStart| RollnStop      | ClearLayer| SelectRhythm  |
+| Phrase 1-4    | ArmPhrase | RollnArmPhrase | PlayPhrase| SelectGenre   |
+| CTL           | Record    | Loop           | Record    | NewSession    |
+| CTL Long      | PlayRhythm| ExtendLoop     | StopPlay  | TapTempo      |
+| Exp Pedal     | BackVol   | BackVol        | BackVol   | BackVol       |
+| Exp Switch    | SaveAll   | SaveAll        | SaveAll   | SaveAll       |      
+
+
+State-State Transition model:
+
+| State-Action  | Stop(S)   | Record/OverD(R)|Play/loop(P)|Rhythm-Switch(X)|
+|---------------|-----------|----------------|-----------|------------------|
+| Bank UP       | Lazy R    | Lazy P         | P         | X                |
+| Bank Down     | Lazy R    | Lazy P         | P         | X                |
+| Phrase 1-4    | S         | Lazy R         | P         | X                |
+| CTL           | R         | P              | R         | X                |
+| CTL Long      | P         | Lazy R         | S         | X                |
+| Exp Pedal     | S         | R              | P         | X                |
+| Exp Switch    | X         | X              | X         | S                |   
+
+todo : add quantize feature

@@ -1,4 +1,4 @@
-### Package Setup
+### Program Setup
 * Uses SoundDevice python for audio and pygame for midi , all dependencies can be installed using pip install -r requirements.txt
 * Tries to use old floor pedals like GT-8 as midi controllers
 * Can use virtual midi device like vkmp for mac for testing purposes

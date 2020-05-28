@@ -1,5 +1,3 @@
-
-import time
 import rtmidi
 
 midi_in = rtmidi.MidiIn()
@@ -9,7 +7,7 @@ if 'VMPK Output' in available_ports:
     midi_in.open_port(available_ports.index('VMPK Output'))
 
 
-midi_in.set_callback(lambda x: print(str(x)+ str(y)))
+midi_in.set_callback(lambda x,y: print(str(x)+ str(y)))
 
 
 

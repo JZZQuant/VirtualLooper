@@ -83,4 +83,12 @@ State-State Transition model:
 | Exp Pedal     | S         | R              | P         | X                |
 | Exp Switch    | X         | X              | X         | S                |   
 
-todo : add quantize feature
+todo : 
+* add quantize feature in place of tap tempo.
+* deploy on an external arduino like device.
+
+MVP :
+
+1. Single Phrase
+2. No RhythmSwitch
+3. Simple five alphabets automata on one track : record ,loop ,stop, play ,save all

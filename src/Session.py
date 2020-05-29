@@ -39,7 +39,7 @@ class RecordState(State):
 
     def on_control(self,value,timestamp,time_delta):
         self.switch_on = ~self.switch_on
-        if time_delta >0.01 and not self.switch_on:
+        if time_delta >0.2 and self.switch_on:
             print("Extended Recording")
             self.session.active_state=self.session.Record
         else :
@@ -50,7 +50,7 @@ class RecordState(State):
 class PlayState(State):
     def __init__(self,session):
         State.__init__(self,session)
-        self.name = "Record"
+        self.name = "Play"
 
     def on_control(self,value,timestamp,time_delta):
         print("Started Recording")

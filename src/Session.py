@@ -1,12 +1,10 @@
 class Phrase(object):
     pass
 
-
 class State(object):
     def __init__(self,session):
         self.name = "Test"
         self.session=session
-        self.switch_on=False
         self.actions={80:self.on_control,7:self.on_exp,81:self.on_exp_switch,32:lambda x : "Hello World",0:self.on_program_change}
 
     def on_control(self,value,timestamp,time_delta):
@@ -28,8 +26,13 @@ class StopState(State):
         self.name = "Stop"
 
     def on_control(self,value,timestamp,time_delta):
-        print("Started Recording")
-        self.session.active_state=self.session.record
+        if time_delta < 0.2 and self.session.control_on:
+            print("Started Recording")
+            self.session.active_state=self.session.record
+        elif time_delta > 0.2 and self.session.control_on:
+            print("Start Playing")
+            self.session.active_state=self.session.play
+        self.session.control_on = ~self.session.control_on
 
 
 class RecordState(State):
@@ -38,13 +41,13 @@ class RecordState(State):
         self.name = "Record"
 
     def on_control(self,value,timestamp,time_delta):
-        self.switch_on = ~self.switch_on
-        if time_delta >0.2 and self.switch_on:
-            print("Extended Recording")
-            self.session.active_state=self.session.Record
-        else :
+        if time_delta < 0.2 and self.session.control_on:
             print("Started Looping")
             self.session.active_state=self.session.play
+        elif time_delta > 0.2 and self.session.control_on:
+            print("Extend Recording")
+            self.session.active_state=self.session.record
+        self.session.control_on = ~self.session.control_on
 
 
 class PlayState(State):
@@ -53,8 +56,13 @@ class PlayState(State):
         self.name = "Play"
 
     def on_control(self,value,timestamp,time_delta):
-        print("Started Recording")
-        self.session.active_state=self.session.record
+        if time_delta < 0.2 and self.session.control_on:
+            print("Start OverDubbing")
+            self.session.active_state=self.session.record
+        elif time_delta > 0.2 and self.session.control_on:
+            print("Stop Playing")
+            self.session.active_state=self.session.stop
+        self.session.control_on = ~self.session.control_on
 
 
 class Session(object):
@@ -66,3 +74,8 @@ class Session(object):
         self.play=PlayState(self)
         self.switch=State(self)
         self.active_state = self.stop
+        self.control_on=False
+        self.exp_on=False
+        self.switch_on=False
+        self.program_on=False
+

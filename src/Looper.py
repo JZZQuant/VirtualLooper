@@ -9,12 +9,13 @@ class Looper(object):
     def __init__(self):
         self._sess = Session(1)
         self.timestamp=0
+        self.is_control_open=False
 
     def on_midi(self,message,data):
         midi = message[0]
         self.timestamp += message[1]
         print("recieved message :%s at time %f" % (midi,self.timestamp))
-        print("current session : %s" % self._sess.active_phrase)
+        self._sess.active_state.actions[midi[1]](midi[2],timestamp=self.timestamp,time_delta = message[1])
 
     async def start_session(self):
         midi_in = rtmidi.MidiIn()

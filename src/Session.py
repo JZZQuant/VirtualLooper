@@ -27,6 +27,7 @@ class Session(object):
         self.control_on = False
         self.exp_on = False
         self.switch_on = False
+        self.back_vol = 1
         self.program_on = False
         self.looper = looper
         self.sound = Queue()
@@ -42,12 +43,12 @@ class Session(object):
             return in_data
         if self.active_state.name == "Play":
             # print("playing")
-            sample = self.active_phrase.phrase.counter()
+            sample = self.active_phrase.phrase.counter(back_vol=self.back_vol)
             return sample + in_data
         if self.active_state.name == "Record":
             if self.active_phrase.is_overdubbing is True:
                 # print("overdubbing")
-                sample = self.active_phrase.phrase.counter(in_data)
+                sample = self.active_phrase.phrase.counter(in_data,back_vol=self.back_vol)
                 self.active_phrase.overdub.put(in_data)
                 return sample
             else:

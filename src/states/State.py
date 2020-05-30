@@ -5,7 +5,7 @@ class State(object):
         self.long_press_time = 0.2
         self.midi_bank = 0
         self.curr_program = 0
-        self.actions={80:self.on_control,1:self.on_exp,81:self.on_exp_switch,32:lambda x : "Hello World",0:self.on_program_change}
+        self.actions={80:self.on_control,7:self.on_exp,81:self.on_exp_switch,32:lambda x : "Hello World",0:self.on_program_change}
 
     def on_control(self,value,timestamp,time_delta,midi):
         print("recieved control message")

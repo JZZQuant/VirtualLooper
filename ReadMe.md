@@ -95,3 +95,16 @@ MVP :
 1. Single Phrase
 2. No RhythmSwitch
 3. Simple five alphabets automata on one track : record ,loop ,stop, play ,save all
+
+V2: 
+1. exp switch /save to file
+2. autostart/autostop
+3. mute/clear layer
+4. program change
+5. set midi out to initialize program_bank
+
+V3: 
+rhythm switch
+
+V4:
+rollstart/stop/armphrase

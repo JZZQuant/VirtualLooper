@@ -2,6 +2,9 @@
 * Uses SoundDevice python for audio and pygame for midi , all dependencies can be installed using pip install -r requirements.txt
 * Tries to use old floor pedals like GT-8 as midi controllers
 * Can use virtual midi device like vkmp for mac for testing purposes
+* pyaudio may not install directly on mac use :
+ ❯ pip install --global-option='build_ext' --global-option='-I/usr/local/include' --global-option='-L/usr/local/lib' pyaudio
+
 
 
 ### Hardware Setup

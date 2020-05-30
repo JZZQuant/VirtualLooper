@@ -1,5 +1,7 @@
-import asyncio
+from signal import pause
+
 import rtmidi
+
 from Session import Session
 
 
@@ -7,7 +9,9 @@ class Looper(object):
     def __init__(self):
         self.midi_in = rtmidi.MidiIn().open_port(0)
         # self.midi_in = self.get_midi_in()
+        self.midi_in.set_callback(self.on_midi)
         self._sess = Session(1, self)
+        #todo : send a midi out signal to explicitly set it to phrase 1
         self.timestamp = 0
 
     def get_midi_in(self):
@@ -36,16 +40,12 @@ class Looper(object):
         midi = message[0]
         self.timestamp += message[1]
         print("recieved message :%s at time %f" % (midi, self.timestamp))
-        self._sess.active_state.actions[midi[1]](midi[2], timestamp=self.timestamp, time_delta=message[1])
-
-    async def start_session(self):
-        self.midi_in.set_callback(self.on_midi)
-        await asyncio.Event().wait()
-
-    def run(self):
-        asyncio.run(self.start_session(), debug=True)
+        if midi[0]==192:
+            self._sess.active_state.on_program_change(midi[1], timestamp=self.timestamp, time_delta=message[1],midi=midi)
+        else:
+            self._sess.active_state.actions[midi[1]](midi[2], timestamp=self.timestamp, time_delta=message[1],midi=midi)
 
 
 if __name__ == "__main__":
     looper = Looper()
-    looper.run()
+    pause()

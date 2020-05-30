@@ -1,4 +1,4 @@
-import queue
+from my_queue import IndexQueue as Queue
 import numpy as np
 from states.PlayState import PlayState
 from states.RecordState import RecordState
@@ -10,8 +10,8 @@ import pyaudio
 class Phrase(object):
     def __init__(self):
         self.is_overdubbing = False
-        self.phrase = queue.Queue()
-        self.overdub = queue.Queue()
+        self.phrase = Queue()
+        self.overdub = Queue()
         self.layers = []
 
 
@@ -29,7 +29,7 @@ class Session(object):
         self.switch_on = False
         self.program_on = False
         self.looper = looper
-        self.sound = queue.Queue(maxsize=10000)
+        self.sound = Queue()
         stream = pyaudio.PyAudio().open(format=pyaudio.paInt16, channels=2, output=True, rate=44100, input=True,
                                         frames_per_buffer=1024, stream_callback=self.callback_wrapper)
 
@@ -42,16 +42,14 @@ class Session(object):
             return in_data
         if self.active_state.name == "Play":
             # print("playing")
-            sample = self.active_phrase.phrase.get()
-            self.active_phrase.phrase.put(sample)
+            sample = self.active_phrase.phrase.counter()
             return sample + in_data
         if self.active_state.name == "Record":
             if self.active_phrase.is_overdubbing is True:
                 # print("overdubbing")
-                sample = self.active_phrase.phrase.get()
+                sample = self.active_phrase.phrase.counter(in_data)
                 self.active_phrase.overdub.put(in_data)
-                self.active_phrase.phrase.put(sample + in_data)
-                return sample + in_data
+                return sample
             else:
                 # print("recording")
                 self.active_phrase.overdub.put(in_data)

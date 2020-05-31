@@ -8,7 +8,15 @@ from Session import Session
 class Looper(object):
     def __init__(self):
         self.midi_in = rtmidi.MidiIn().open_port(0)
+
+        # self.midi_in = rtmidi.MidiIn().open_port(01
+        # self.midi_out = rtmidi.MidiOut().open_port(1)
+        # self.midi_out.send_message([176, 0, 0])
+        # self.midi_out.send_message([176, 32, 0])
+        # self.midi_out.send_message([192, 0])
+
         # self.midi_in = self.get_midi_in()
+        # self.midi_out = self.get_midi_out()
         self.midi_in.set_callback(self.on_midi)
         self._sess = Session(1, self)
         #todo : send a midi out signal to explicitly set it to phrase 1
@@ -37,9 +45,10 @@ class Looper(object):
         return midi_out
 
     def on_midi(self, message, data):
+        print([len(layer.data) for layer in self._sess.active_phrase.layers])
         midi = message[0]
         self.timestamp += message[1]
-        # print("recieved message :%s at time %f" % (midi, self.timestamp))
+        print("recieved message :%s at time %f" % (midi, self.timestamp))
         if midi[0]==192:
             self._sess.active_state.on_program_change(midi[1], timestamp=self.timestamp, time_delta=message[1],midi=midi)
         else:

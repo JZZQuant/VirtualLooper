@@ -18,7 +18,7 @@ class StopState(State):
         self.session.control_on = ~self.session.control_on
 
     def on_phrase_change(self, prev_patch, cur_patch):
-        self.session.active_state = self.session.phrases[cur_patch]
+        self.session.active_phrase = self.session.phrases[cur_patch]
 
     def on_bank_down(self,prev_bank, cur_bank):
         print("will roll start in now")

@@ -10,14 +10,16 @@ class State(object):
     def __init__(self, session):
         self.name = "Test"
         self.session = session
-        self.long_press_time = 0.2
+        self.long_press_time = 0.4
         self.midi_bank = 0
         self.curr_program = 0
         self.auto_start_flag =False
-        self.auto_stop_flag =False
         self.audio_writer = pyaudio.PyAudio()
-        self.actions = {80: self.on_control, 7: self.on_exp, 81: self.on_exp_switch, 32: lambda x: "Hello World",
+        self.actions = {80: self.on_control, 7: self.on_exp, 81: self.on_exp_switch, 32: self.dummy_func,
                         0: self.on_program_change}
+
+    def dummy_func(self, value, timestamp, time_delta, midi):
+        print("recieved control message")
 
     def on_control(self, value, timestamp, time_delta, midi):
         print("recieved control message")
@@ -31,7 +33,7 @@ class State(object):
             if not self.session.expression_on:
                 if self.session.active_state.name == "Record":
                     self.session.active_phrase.layers.append(self.session.active_phrase.overdub)
-                    self.session.active_phrase.overdub = Queue()
+                    self.session.active_phrase.overdub = Queue(max_size = len(self.session.active_phrase.phrase.data))
                     self.session.active_state = self.session.switch
                 for i, phrase in self.session.phrases.items():
                     if len(phrase.layers) == 0:
@@ -56,8 +58,10 @@ class State(object):
         if midi[0] == 192:
             temp = self.curr_program
             self.curr_program = midi[1] + self.midi_bank * 100
-            prev_bank,prev_patch =  temp/4,temp%4
-            cur_bank,cur_patch =  self.curr_program/4,self.curr_program%4
+            prev_bank,prev_patch =  (temp//4)+1,temp%4+1
+            cur_bank,cur_patch =  (self.curr_program//4)+1,self.curr_program%4+1
+            print(prev_bank )
+            print(cur_bank)
             if prev_bank == cur_bank:
                 self.on_phrase_change(prev_patch,cur_patch)
             elif prev_bank > cur_bank :

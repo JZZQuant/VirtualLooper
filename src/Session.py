@@ -45,7 +45,7 @@ class Session(object):
         self.program_on = False
         self.looper = looper
         self.sound = Queue()
-        self.frames_per_buffer = 1024
+        self.frames_per_buffer = 256
         self.sample_rate = 44100
         self.channels = 2
         stream = pyaudio.PyAudio().open(format=pyaudio.paInt16, channels=self.channels, output=True,
@@ -59,32 +59,25 @@ class Session(object):
     def callback(self, in_data, frame_count, time_info, status):
         if self.active_state.name == "Stop":
             if self.active_state.auto_start_flag is True:
-                if len(self.auto_start_threshold) > 0 and np.mean(self.auto_start_threshold) < np.max(in_data) / 50:
+                if len(self.auto_start_threshold) > 0 and np.max(in_data) > 10  and np.mean(self.auto_start_threshold) < (np.max(in_data) /2) :
                     print("start auto recording")
                     self.active_state.auto_start_flag = False
                     self.auto_start_threshold = []
                     self.active_state = self.record
-                else:
+                elif np.max(in_data) > 10:
                     self.auto_start_threshold.append(np.max(in_data))
             return in_data
         if self.active_state.name in ["Play", "Expression"]:
-            # print("playing")
             sample = self.active_phrase.phrase.counter(back_vol=self.back_vol)
             return sample + in_data
         if self.active_state.name == "Record":
             if self.active_phrase.is_overdubbing is True:
-                # print("overdubbing")
-                if self.active_state.auto_stop_flag == True and self.active_phrase.phrase.head == 0:
-                    self.active_state.auto_stop_flag = False
-                    self.active_state = self.stop
+                if self.active_phrase.phrase.head == 0:
+                    self.active_state = self.play
                 sample = self.active_phrase.phrase.counter(in_data, back_vol=self.back_vol)
                 self.active_phrase.overdub.put(in_data)
                 return sample
             else:
-                # print("recording")
-                if self.active_state.auto_stop_flag == True:
-                    self.active_state.auto_stop_flag = False
                 self.active_phrase.overdub.put(in_data)
                 self.active_phrase.phrase.put(in_data)
-                print(in_data.shape)
                 return in_data

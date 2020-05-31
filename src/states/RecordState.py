@@ -22,9 +22,7 @@ class RecordState(State):
             self.session.active_state=self.session.play
         elif time_delta > self.long_press_time and self.session.control_on:
             print("Extend Recording")
-            print(len(self.session.active_phrase.phrase.data))
             self.session.active_phrase.phrase.extend_loop()
-            print(len(self.session.active_phrase.phrase.data))
             for layer in self.session.active_phrase.layers:
                 layer.extend_loop()
             self.session.active_state=self.session.record

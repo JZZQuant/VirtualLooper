@@ -19,7 +19,6 @@ class Looper(object):
         # self.midi_out = self.get_midi_out()
         self.midi_in.set_callback(self.on_midi)
         self._sess = Session(1, self)
-        #todo : send a midi out signal to explicitly set it to phrase 1
         self.timestamp = 0
 
     def get_midi_in(self):

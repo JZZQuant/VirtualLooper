@@ -54,14 +54,11 @@ class State(object):
     def on_program_change(self, value, timestamp, time_delta, midi):
         if midi[1] == 0 and midi[0] == 176:
             self.midi_bank = midi[2]
-        # todo : change it back to midi 1 after testing is over
         if midi[0] == 192:
             temp = self.curr_program
             self.curr_program = midi[1] + self.midi_bank * 100
             prev_bank,prev_patch =  (temp//4)+1,temp%4+1
             cur_bank,cur_patch =  (self.curr_program//4)+1,self.curr_program%4+1
-            print(prev_bank )
-            print(cur_bank)
             if prev_bank == cur_bank:
                 self.on_phrase_change(prev_patch,cur_patch)
             elif prev_bank > cur_bank :

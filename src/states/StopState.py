@@ -17,6 +17,16 @@ class StopState(State):
             self.session.active_state = self.session.play
         self.session.control_on = ~self.session.control_on
 
+    def on_phrase_change(self, prev_patch, cur_patch):
+        self.session.active_state = self.session.phrases[cur_patch]
+
+    def on_bank_down(self,prev_bank, cur_bank):
+        print("will roll start in now")
+
+    def on_bank_up(self, prev_bank, cur_bank):
+        print("setting auto start flag")
+        self.auto_start_flag=True
+
 
 class ExpressionState(State):
     def __init__(self, session):

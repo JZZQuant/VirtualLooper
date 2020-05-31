@@ -65,7 +65,7 @@ State machine for running the looper. Below table explains the corresponding act
 
 | State-Action  | Stop      | Record/Overdub | Play/loop | Rhythm-Switch |
 |---------------|-----------|----------------|-----------|---------------|
-| Bank UP       | AutoStart | AutoStop       | MuteLayer | SelectRhythm  |
+| Bank UP       | AutoStart | AutoStop       |SelectLayer| SelectRhythm  |
 | Bank Down     | RollnStart| RollnStop      | ClearLayer| SelectRhythm  |
 | Phrase 1-4    | ArmPhrase | RollnArmPhrase | PlayPhrase| SelectGenre   |
 | CTL           | Record    | Loop           | Record    | NewSession    |
@@ -101,10 +101,20 @@ V2:
 2. autostart/autostop
 3. mute/clear layer
 4. program change
-5. set midi out to initialize program_bank
+
+
+V2.5
+code cleanup
+testing
+set midi out to initialize program_bank
+comments 
+logging
+add config file
 
 V3: 
 rhythm switch
 
 V4:
-rollstart/stop/armphrase
+rollstart/rollstop/rollarmphrase
+load all from a folder
+melody line overdub

@@ -39,7 +39,7 @@ class Looper(object):
     def on_midi(self, message, data):
         midi = message[0]
         self.timestamp += message[1]
-        print("recieved message :%s at time %f" % (midi, self.timestamp))
+        # print("recieved message :%s at time %f" % (midi, self.timestamp))
         if midi[0]==192:
             self._sess.active_state.on_program_change(midi[1], timestamp=self.timestamp, time_delta=message[1],midi=midi)
         else:

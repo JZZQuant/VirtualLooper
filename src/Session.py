@@ -1,9 +1,12 @@
+import os
+import uuid
+
 from my_queue import IndexQueue as Queue
 import numpy as np
 from states.PlayState import PlayState
 from states.RecordState import RecordState
 from states.State import State
-from states.StopState import StopState
+from states.StopState import StopState, ExpressionState
 import pyaudio
 
 
@@ -19,20 +22,28 @@ class Session(object):
     def __init__(self, active_phrase, looper):
         self.phrases = {1: Phrase(), 2: Phrase(), 3: Phrase(), 4: Phrase()}
         self.active_phrase = self.phrases[active_phrase]
+        self.session_id = str(uuid.uuid4())
+        self.folder = "../../VLoop/"+self.session_id
+        for i in self.phrases.keys():
+            os.makedirs(self.folder+"/phrase"+ str(i)+"/")
         self.stop = StopState(self)
         self.record = RecordState(self)
         self.play = PlayState(self)
-        self.switch = State(self)
+        self.switch = ExpressionState(self)
         self.active_state = self.stop
         self.control_on = False
+        self.expression_on =False
         self.exp_on = False
         self.switch_on = False
         self.back_vol = 1
         self.program_on = False
         self.looper = looper
         self.sound = Queue()
-        stream = pyaudio.PyAudio().open(format=pyaudio.paInt16, channels=2, output=True, rate=44100, input=True,
-                                        frames_per_buffer=1024, stream_callback=self.callback_wrapper)
+        self.frames_per_buffer=1024
+        self.sample_rate=44100
+        self.channels = 2
+        stream = pyaudio.PyAudio().open(format=pyaudio.paInt16, channels=self.channels, output=True, rate=self.sample_rate, input=True,
+                                        frames_per_buffer=self.frames_per_buffer, stream_callback=self.callback_wrapper)
 
     def callback_wrapper(self, in_data, frame_count, time_info, status):
         return self.callback(np.fromstring(in_data, dtype=np.int16), frame_count, time_info, status).astype(
@@ -41,7 +52,7 @@ class Session(object):
     def callback(self, in_data, frame_count, time_info, status):
         if self.active_state.name == "Stop":
             return in_data
-        if self.active_state.name == "Play":
+        if self.active_state.name in  ["Play","Expression"] :
             # print("playing")
             sample = self.active_phrase.phrase.counter(back_vol=self.back_vol)
             return sample + in_data

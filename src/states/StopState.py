@@ -12,7 +12,13 @@ class StopState(State):
             print("Started Recording")
             self.session.active_phrase.is_overdubbing = ~self.session.active_phrase.phrase.empty()
             self.session.active_state = self.session.record
-        elif time_delta > self.long_press_time and self.session.control_on:
+        elif time_delta > self.long_press_time and self.session.control_on and not self.session.active_phrase.phrase.empty():
             print("Start Playing")
             self.session.active_state = self.session.play
         self.session.control_on = ~self.session.control_on
+
+
+class ExpressionState(State):
+    def __init__(self, session):
+        State.__init__(self, session)
+        self.name = "Expression"

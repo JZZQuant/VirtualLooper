@@ -10,7 +10,7 @@ class StopState(State):
         if time_delta < self.long_press_time and self.session.control_on:
             # go to the active phrase,start playing in loop from queue
             print("Started Recording")
-            self.session.active_phrase.is_overdubbing = ~self.session.active_phrase.phrase.empty()
+            self.session.active_phrase.set_overdubbing_mode()
             self.session.active_state = self.session.record
         elif time_delta > self.long_press_time and self.session.control_on and not self.session.active_phrase.phrase.empty():
             print("Start Playing")

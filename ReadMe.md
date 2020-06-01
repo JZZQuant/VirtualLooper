@@ -103,6 +103,8 @@ V2:
 
 V2.5
 * auto extend
+* create an overdubbing state/void state
+* split control and long_control to different events in base class
 * code cleanup
 * testing
 * comments 

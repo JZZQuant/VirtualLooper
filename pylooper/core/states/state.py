@@ -3,8 +3,6 @@ import wave
 
 import pyaudio
 
-from structures import Queue
-
 
 class State(object):
     def __init__(self, session):
@@ -32,20 +30,21 @@ class State(object):
         if time_delta > self.long_press_time:
             if not self.session.expression_on:
                 if self.session.active_state.name == "Record":
-                    self.session.active_phrase.layers.append(self.session.active_phrase.overdub)
-                    self.session.active_phrase.overdub = Queue(max_size = len(self.session.active_phrase.phrase.data))
-                    self.session.active_state = self.session.switch
+                    self.session.active_phrase.close_recording_for_loop_over(self.session.frames_per_buffer)
+                # todo : move to a wrapper around the audio driver
                 for i, phrase in self.session.phrases.items():
                     if len(phrase.layers) == 0:
                         pass
                     for layer in phrase.layers:
-                        file_name = self.session.folder + "/phrase" + str(i) + "/" + str(hash(str(layer.data[0]))) + ".wav"
+                        file_name = self.session.folder + "/phrase" + str(i) + "/" + str(
+                            hash(str(layer.data[0]))) + ".wav"
                         if not os.path.exists(file_name):
                             with wave.open(file_name, 'wb') as wf:
                                 wf.setnchannels(self.session.channels)
                                 wf.setsampwidth(2)
                                 wf.setframerate(self.session.sample_rate)
                                 wf.writeframes(b''.join(layer.data))
+                self.session.active_state = self.session.switch
             else:
                 self.session.active_state = self.session.play
             self.session.expression_on = ~self.session.expression_on

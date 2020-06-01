@@ -1,39 +1,31 @@
-import os
-import uuid
-
 import numpy as np
 import pyaudio
 
-from core import *
-from structures.pile_queue import Queue
-
-
-class Phrase(object):
-    def __init__(self):
-        self.is_overdubbing = False
-        self.phrase = Queue()
-        self.overdub = Queue()
-        self.layers = []
-        self.phrase_state_index = -1
-
-    def phrase_states(self):
-        n = len(self.layers)
-        return [list(range(n))] + [[el] for el in range(n)]
+from core.adapters.midi import MidiDriver
+from core.adapters.reader import AudioReader
+from core.adapters.writer import AudioWriter
+from core.phrase import Phrase
+from core.states.expression import ExpressionState
+from core.states.play import PlayState
+from core.states.record import RecordState
+from core.states.stop import StopState
 
 
 class Session(object):
-    def __init__(self, active_phrase, looper):
+    def __init__(self, midi_out, midi_in):
         self.auto_start_threshold = []
+        self.midi = MidiDriver(midi_out, midi_in)
         self.phrases = {1: Phrase(), 2: Phrase(), 3: Phrase(), 4: Phrase()}
-        self.active_phrase = self.phrases[active_phrase]
-        self.session_id = str(uuid.uuid4())
-        self.folder = "../../VLoop/" + self.session_id
-        for i in self.phrases.keys():
-            os.makedirs(self.folder + "/phrase" + str(i) + "/")
+        self.active_phrase = self.phrases[self.midi.active_phrase]
+        self.midi.midi_in.set_callback(self.on_midi)
+        self.wave_writer = AudioWriter(self.phrases.keys())
+        self.wave_reader = AudioReader(self.callback_wrapper)
+
         self.stop = StopState(self)
         self.record = RecordState(self)
         self.play = PlayState(self)
         self.switch = ExpressionState(self)
+
         self.active_state = self.stop
         self.control_on = False
         self.expression_on = False
@@ -41,14 +33,7 @@ class Session(object):
         self.switch_on = False
         self.back_vol = 1
         self.program_on = False
-        self.looper = looper
-        self.sound = Queue()
-        self.frames_per_buffer = 256
-        self.sample_rate = 44100
-        self.channels = 2
-        stream = pyaudio.PyAudio().open(format=pyaudio.paInt16, channels=self.channels, output=True,
-                                        rate=self.sample_rate, input=True,
-                                        frames_per_buffer=self.frames_per_buffer, stream_callback=self.callback_wrapper)
+
 
     def callback_wrapper(self, in_data, frame_count, time_info, status):
         return self.callback(np.fromstring(in_data, dtype=np.int16), frame_count, time_info, status).astype(
@@ -79,3 +64,12 @@ class Session(object):
                 self.active_phrase.overdub.put(in_data)
                 self.active_phrase.phrase.put(in_data)
                 return in_data
+
+    def on_midi(self, message, data):
+        midi = message[0]
+        self.timestamp += message[1]
+        print("recieved message :%s at time %f" % (midi, self.timestamp))
+        if midi[0] == 192:
+            self.active_state.on_program_change(midi[1], timestamp=self.timestamp, time_delta=message[1], midi=midi)
+        else:
+            self.active_state.actions[midi[1]](midi[2], timestamp=self.timestamp, time_delta=message[1], midi=midi)

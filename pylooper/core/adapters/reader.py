@@ -8,4 +8,4 @@ class AudioReader(object):
         self.channels = 2
         self.stream = pyaudio.PyAudio().open(format=pyaudio.paInt16, channels=self.channels, output=True,
                                              rate=self.sample_rate, input=True,
-                                             frames_per_buffer=self.frames_per_buffer, stream_callback=self.callback)
+                                             frames_per_buffer=self.frames_per_buffer, stream_callback=callback)

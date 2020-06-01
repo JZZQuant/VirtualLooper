@@ -20,7 +20,7 @@ class Session(object):
         self.midi.midi_in.set_callback(self.on_midi)
         self.wave_writer = AudioWriter(self.phrases.keys())
         self.wave_reader = AudioReader(self.callback_wrapper)
-
+        self.timestamp=0
         self.stop = StopState(self)
         self.record = RecordState(self)
         self.play = PlayState(self)
@@ -56,6 +56,8 @@ class Session(object):
         if self.active_state.name == "Record":
             if self.active_phrase.is_overdubbing is True:
                 if self.active_phrase.phrase.head == 0:
+                    print("Finished recording force set overdubbing to play mode")
+                    self.active_phrase.close_recording_for_loop_over(self.wave_reader.frames_per_buffer)
                     self.active_state = self.play
                 sample = self.active_phrase.phrase.counter(in_data, back_vol=self.back_vol)
                 self.active_phrase.overdub.put(in_data)

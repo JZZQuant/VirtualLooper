@@ -13,9 +13,11 @@ class Phrase(object):
 
     def phrase_states(self):
         n = len(self.layers)
+        print("found %d layers" % n)
         return [list(range(n))] + [[el] for el in range(n)]
 
     def arm_overdubbing_track(self, buffer_rate):
+        print("Pre-padding records with zeros")
         self.overdub.pre_padding(self.phrase.head * [np.zeros(2 * buffer_rate)])
         self.is_overdubbing = True
 
@@ -34,10 +36,12 @@ class Phrase(object):
     def select_phrase(self):
         self.phrase_state_index = (self.phrase_state_index + 1) % (len(self.layers) + 1)
         phrase_state = self.phrase_states()[self.phrase_state_index]
+        print("Current Selected Layer %s" % phrase_state)
         active_layers = [self.layers[i].data for i in phrase_state]
         self.phrase.data = list(np.array(active_layers).sum(axis=0))
 
     def close_recording_for_loop_over(self, buffer_rate):
+        print("post-padding the recording with zeros")
         max_size = max([len(layer.data) for layer in self.layers] + [len(self.phrase.data)])
         self.max_size = max_size
         # postpend zeros to bring all layers to same length
@@ -45,6 +49,7 @@ class Phrase(object):
         self.overdub.post_padding(postpend_length * [np.zeros(2 * buffer_rate)])
         self.layers.append(self.overdub.slice(max_size))
         self.overdub = Queue()
+        print("Closed recording")
 
     def extend_recording(self):
         self.phrase.extend_loop()

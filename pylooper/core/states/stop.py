@@ -7,15 +7,16 @@ class StopState(State):
         self.name = "Stop"
 
     def on_control(self, value, timestamp, time_delta,midi):
-        if time_delta < self.long_press_time and self.session.control_on:
-            # go to the active phrase,start playing in loop from queue
-            print("Started Recording")
-            self.session.active_phrase.set_overdubbing_mode()
-            self.session.active_state = self.session.record
-        elif time_delta > self.long_press_time and self.session.control_on and not self.session.active_phrase.phrase.empty():
+        print("Started Recording")
+        self.session.active_phrase.set_overdubbing_mode()
+        self.session.active_state = self.session.record
+
+    def on_long_control(self, value, timestamp, time_delta, midi):
+        if self.session.active_phrase.phrase.empty():
+            print("No layers recorded for current phrase")
+        else:
             print("Start Playing")
             self.session.active_state = self.session.play
-        self.session.control_on = ~self.session.control_on
 
     def on_phrase_change(self, prev_patch, cur_patch):
         self.session.active_phrase = self.session.phrases[cur_patch]

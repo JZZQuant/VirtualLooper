@@ -3,22 +3,18 @@ class Queue(object):
         self.data = []
         self.head = 0
         self.tail = -1
-        self.len = 0
 
     def pre_padding(self, data):
         self.data = data + self.data
-        self.len = len(self.data)
 
     def post_padding(self, data):
         self.data = self.data + data
-        self.len = len(self.data)
 
     def put(self, val):
         self.data.append(val)
-        self.len += 1
 
     def counter(self, addendum=None, back_vol=1):
-        self.head = (self.head + 1) % self.len
+        self.head = (self.head + 1) % (len(self.data))
         self.tail = self.head - 1
         if addendum is not None:
             self.data[self.tail] = addendum + self.data[self.tail]
@@ -30,7 +26,7 @@ class Queue(object):
         self.post_padding(self.data)
 
     def empty(self):
-        return self.len == 0
+        return len(self.data) == 0
 
     def slice(self,size):
         self.data=self.data[:size]

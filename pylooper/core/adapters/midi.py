@@ -28,10 +28,11 @@ class MidiDriver(object):
     @staticmethod
     def get_default_device_id(out=True):
         device_id = -1
-        midi = rtmidi.MidiOut if out else rtmidi.MidiIn
+        midi = rtmidi.MidiOut() if out else rtmidi.MidiIn()
         available_ports = midi.get_ports()
         available_ports = [port.lower() for port in available_ports]
         for device_name in ["uno", "vmpk"]:
-            if device_name in available_ports:
-                device_id = available_ports.index(device_name)
+            for port in available_ports:
+                if device_name in port:
+                    device_id = available_ports.index(port)
         return device_id, available_ports

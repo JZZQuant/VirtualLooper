@@ -18,7 +18,7 @@ class RecordState(State):
             postpend_length = len(self.session.active_phrase.phrase.data) - len(self.session.active_phrase.overdub.data)
             self.session.active_phrase.overdub.post_padding(postpend_length*[np.zeros(2*self.session.frames_per_buffer)])
             self.session.active_phrase.layers.append(self.session.active_phrase.overdub.slice(max_size))
-            self.session.active_phrase.overdub = Queue(max_size= max_size)
+            self.session.active_phrase.overdub = Queue()
             self.session.active_state=self.session.play
         elif time_delta > self.long_press_time and self.session.control_on:
             print("Extend Recording")

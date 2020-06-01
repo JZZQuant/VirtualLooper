@@ -101,7 +101,7 @@ V2:
 2. autostart/autostop
 3. mute/clear layer
 4. program change
-5. * set midi out to initialize program_bank
+5. set midi out to initialize program_bank
 
 
 

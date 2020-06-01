@@ -17,11 +17,13 @@ class PlayState(State):
         self.session.active_state = self.session.stop
 
     def on_phrase_change(self, prev_patch, cur_patch):
+        print("change phrase from %d to %d" % (prev_patch, cur_patch))
         self.session.active_phrase = self.session.phrases[cur_patch]
 
     def on_bank_down(self, prev_bank, cur_bank):
         print("Clear Layer")
         layers_left = self.session.active_phrase.clear_phrase()
+        # todo : must go back to void state which inherits from stop state
         if layers_left == 0:
             self.session.active_state = self.session.stop
 

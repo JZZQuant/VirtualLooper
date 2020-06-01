@@ -117,4 +117,10 @@ V3:
 V4:
 * rollstart/rollstop/rollarmphrase
 * load preset from a folder
-* melody line overdub
+* merge layers in a phrase and write to files
+* create stickers for the pedal
+
+
+### Not feasible:
+1. Incremental extend loop is not feasible as it would break overdubs discontinuous so only *2 is possible
+2. void state optional for now

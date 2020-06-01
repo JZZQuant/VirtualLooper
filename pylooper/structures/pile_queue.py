@@ -21,7 +21,6 @@ class Queue(object):
             return addendum*back_vol + self.data[self.tail]
         return self.data[self.tail]*back_vol
 
-    # todo : modify to a minor extend of loop instead of doubling
     def extend_loop(self):
         self.post_padding(self.data)
 

@@ -1,6 +1,6 @@
 from signal import pause
 
-from core.adapters.midi import MidiDriver
+from adapters.midi import MidiDriver
 from core.session import Session
 
 

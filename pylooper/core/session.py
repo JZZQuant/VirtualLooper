@@ -1,9 +1,8 @@
 import numpy as np
 import pyaudio
 
-from core.adapters.midi import MidiDriver
-from core.adapters.reader import AudioReader
-from core.adapters.writer import AudioWriter
+from adapters.midi import MidiDriver
+from adapters.reader import AudioReader
 from core.phrase import Phrase
 from core.states.expression import ExpressionState
 from core.states.play import PlayState
@@ -14,13 +13,14 @@ from core.states.stop import StopState
 class Session(object):
     def __init__(self, midi_out, midi_in):
         self.auto_start_threshold = []
+        # todo : session object mustve acccess to only active phrase rest all must be crete by looper
         self.midi = MidiDriver(midi_out, midi_in)
         self.phrases = {1: Phrase(), 2: Phrase(), 3: Phrase(), 4: Phrase()}
+        # todo : session object mustve acccess to only active state rest all must be crete by looper
         self.active_phrase = self.phrases[self.midi.active_phrase]
         self.midi.midi_in.set_callback(self.on_midi)
-        self.wave_writer = AudioWriter(self.phrases.keys())
-        self.wave_reader = AudioReader(self.callback_wrapper)
-        self.timestamp=0
+        self.wave_reader = AudioReader(self.callback_wrapper, self.phrases.keys())
+        self.timestamp = 0
         self.stop = StopState(self)
         self.record = RecordState(self)
         self.play = PlayState(self)
@@ -34,12 +34,12 @@ class Session(object):
         self.back_vol = 1
         self.program_on = False
 
-
     def callback_wrapper(self, in_data, frame_count, time_info, status):
         return self.callback(np.fromstring(in_data, dtype=np.int16), frame_count, time_info, status).astype(
             np.int16), pyaudio.paContinue
 
     def callback(self, in_data, frame_count, time_info, status):
+        # todo : give the responsibility back to corresponding states by turning callbakc to a simple caseswitch
         if self.active_state.name == "Stop":
             if self.active_state.auto_start_flag is True:
                 if len(self.auto_start_threshold) > 0 and np.max(in_data) > 10  and np.mean(self.auto_start_threshold) < (np.max(in_data) /2) :
@@ -54,6 +54,7 @@ class Session(object):
             sample = self.active_phrase.phrase.counter(back_vol=self.back_vol)
             return sample + in_data
         if self.active_state.name == "Record":
+            # todo:move this to record and from there to phrase
             if self.active_phrase.is_overdubbing is True:
                 if self.active_phrase.phrase.head == 0:
                     print("Finished recording force set overdubbing to play mode")
@@ -70,8 +71,17 @@ class Session(object):
     def on_midi(self, message, data):
         midi = message[0]
         self.timestamp += message[1]
-        print("recieved message :%s at time %f" % (midi, self.timestamp))
+        # todo :modify these to logger info messages
+        print("received message :%s at time %f" % (midi, self.timestamp))
+        # todo : create a midi datastrcuture and push the 'if' to that class
         if midi[0] == 192:
             self.active_state.on_program_change(midi[1], timestamp=self.timestamp, time_delta=message[1], midi=midi)
         else:
             self.active_state.actions[midi[1]](midi[2], timestamp=self.timestamp, time_delta=message[1], midi=midi)
+
+    def write_phrases(self):
+        for i, phrase in self.phrases.items():
+            if len(phrase.layers) == 0:
+                pass
+            for layer in phrase.layers:
+                self.wave_reader.write_layer(i, layer)

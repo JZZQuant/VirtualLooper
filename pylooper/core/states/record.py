@@ -15,7 +15,6 @@ class RecordState(State):
         print("Extend Recording")
         self.session.active_phrase.extend_recording()
         self.session.active_state=self.session.record
-        self.session.control_on = ~self.session.control_on
 
     def on_bank_up(self, prev_bank, cur_bank):
         print("still Unimplemented feature flag")

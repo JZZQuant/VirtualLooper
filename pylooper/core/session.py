@@ -4,10 +4,8 @@ import uuid
 import numpy as np
 import pyaudio
 
-from my_queue import IndexQueue as Queue
-from states.PlayState import PlayState
-from states.RecordState import RecordState
-from states.StopState import StopState, ExpressionState
+from core import *
+from structures.pile_queue import Queue
 
 
 class Phrase(object):

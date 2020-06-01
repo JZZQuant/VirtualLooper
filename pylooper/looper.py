@@ -2,7 +2,7 @@ from signal import pause
 
 import rtmidi
 
-from Session import Session
+from core.session import Session
 
 
 class Looper(object):

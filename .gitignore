@@ -3,4 +3,4 @@
 /.idea/
 /notebooks/.ipynb_checkpoints/
 .DS_Store
-src/__pycache__/
+pylooper/__pycache__/

@@ -1,11 +1,13 @@
 ### Program Setup
-* Uses SoundDevice python for audio and pygame for midi , all dependencies can be installed using pip install -r requirements.txt
+```
+brew install portaudio
+pip install --global-option='build_ext' --global-option='-I/usr/local/include' --global-option='-L/usr/local/lib' pyaudio
+pip install -r requirements.txt
+```
 * Tries to use old floor pedals like GT-8 as midi controllers
 * Can use virtual midi device like vkmp for mac for testing purposes
-* pyaudio may not install directly on mac use :
- ❯ pip install --global-option='build_ext' --global-option='-I/usr/local/include' --global-option='-L/usr/local/lib' pyaudio
-
-
+* on Gt-8 Set to immediate for sys bank response , you would want bank up and down to sent immediate midi message
+* on Gt-8 Exp pedal switch calibrate to low force
 
 ### Hardware Setup
 There are 9 possible midi controllers on GT-8 floor board ,each one of them can be used in a variety of ways to achieve a looper like feel.
@@ -52,12 +54,6 @@ Program:
 [[[176, 32, 0, 0], 1841939]]
 [[[192, 39, 0, 0], 1841940]].   + 40. /85
 
-### Other hardware settings :
-* Set to immediate for sys bank response
-* Exp pedal switch calibrate to low force and set it to  wah toggle
-* Set CTRL to amp toggle
-* Set the patch range between 1-36 ie user modes only (makes life to over write patches as per requirements if needed)
-
 ### Finite Automata Table
 
 State machine for running the looper. Below table explains the corresponding action committed.
@@ -101,7 +97,7 @@ V2:
 2. autostart/autostop
 3. mute/clear layer
 4. program change
-5. * set midi out to initialize program_bank
+5. set midi out to initialize program_bank
 
 
 
@@ -114,7 +110,7 @@ V2.5
 * add config file
 
 V3: 
-rhythm switch
+*  Rhythm switch
 
 V4:
 * rollstart/rollstop/rollarmphrase

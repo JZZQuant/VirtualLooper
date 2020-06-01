@@ -1,6 +1,6 @@
 import numpy as np
 
-from states.State import State
+from core.states import State
 
 
 class PlayState(State):

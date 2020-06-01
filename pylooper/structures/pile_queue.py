@@ -1,26 +1,23 @@
-import copy
-
-
-class IndexQueue(object):
-    def __init__(self,max_size=-1):
+class Queue(object):
+    def __init__(self, max_size=-1):
         self.data = []
         self.head = 0
         self.tail = -1
         self.len = 0
 
-    def pre_padding(self,data):
-        self.data= data + self.data
+    def pre_padding(self, data):
+        self.data = data + self.data
         self.len = len(self.data)
 
-    def post_padding(self,data):
-        self.data= self.data + data
+    def post_padding(self, data):
+        self.data = self.data + data
         self.len = len(self.data)
 
     def put(self, val):
         self.data.append(val)
         self.len += 1
 
-    def counter(self, addendum=None,back_vol=1):
+    def counter(self, addendum=None, back_vol=1):
         self.head = (self.head + 1) % self.len
         self.tail = self.head - 1
         if addendum is not None:

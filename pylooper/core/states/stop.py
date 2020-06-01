@@ -1,4 +1,4 @@
-from states.State import State
+from core.states import State
 
 
 class StopState(State):
@@ -26,9 +26,3 @@ class StopState(State):
     def on_bank_up(self, prev_bank, cur_bank):
         print("setting auto start flag")
         self.auto_start_flag=True
-
-
-class ExpressionState(State):
-    def __init__(self, session):
-        State.__init__(self, session)
-        self.name = "Expression"

@@ -3,7 +3,7 @@ import wave
 
 import pyaudio
 
-from my_queue import IndexQueue as Queue
+from structures import Queue
 
 
 class State(object):

@@ -6,15 +6,15 @@ class PlayState(State):
         State.__init__(self, session)
         self.name = "Play"
 
-    def on_control(self, value, active_phrase):
+    def on_control(self, value, timestamp, time_delta, midi):
         print("Start OverDubbing")
-        active_phrase.arm_overdubbing_track()
+        self.session.active_phrase.arm_overdubbing_track()
+        self.session.active_state = self.session.record
         print("Finished prepadding overdub track OverDubbing")
-        return "Record"
 
-    def on_long_control(self, value, active_phrase):
+    def on_long_control(self, value, timestamp, time_delta, midi):
         print("Stop Playing")
-        return "Stop"
+        self.session.active_state = self.session.stop
 
     def on_phrase_change(self, prev_patch, cur_patch):
         print("change phrase from %d to %d" % (prev_patch, cur_patch))
@@ -33,4 +33,4 @@ class PlayState(State):
 
     def on_state(self, in_data, active_phrase, back_vol):
         sample = active_phrase.phrase.counter(back_vol=back_vol)
-        return sample + in_data, self.name
+        return sample + in_data

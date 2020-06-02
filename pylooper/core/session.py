@@ -23,9 +23,12 @@ class Session(object):
         # todo : session object mustve acccess to only active state rest all must be crete by looper
         self.active_phrase = self.phrases[self.midi.active_phrase]
         self.timestamp = 0
-        self.states = {"Stop": StopState(self), "Record": RecordState(self), "Play": PlayState(self),
-                       "Rhythm": ExpressionState(self)}
-        self.active_state = self.states["Stop"]
+        self.stop = StopState(self)
+        self.record = RecordState(self)
+        self.play = PlayState(self)
+        self.switch = ExpressionState(self)
+
+        self.active_state = self.stop
         self.control_on = False
         self.expression_on = False
         self.exp_on = False
@@ -35,9 +38,8 @@ class Session(object):
 
     def callback(self, in_data, frame_count, time_info, status):
         array_input_fromstring = np.fromstring(in_data, dtype=np.int16)
-        processed_signal_for_output, new_state = self.active_state.on_state(array_input_fromstring, self.active_phrase,
-                                                                            self.back_vol)
-        self.active_state = self.states[new_state]
+        processed_signal_for_output = self.active_state.on_state(array_input_fromstring, self.active_phrase,
+                                                                 self.back_vol)
         return processed_signal_for_output.astype(np.int16), pyaudio.paContinue
 
     def on_midi(self, message, data):
@@ -47,12 +49,9 @@ class Session(object):
         print("received message :%s at time %f" % (midi, self.timestamp))
         # todo : create a midi datastrcuture and push the 'if' to that class
         if midi[0] == 192:
-            new_state = self.active_state.on_program_change(midi[1], active_phrase=self.active_phrase,
-                                                            time_delta=message[1], midi=midi)
+            self.active_state.on_program_change(midi[1], timestamp=self.timestamp, time_delta=message[1], midi=midi)
         else:
-            new_state = self.active_state.actions[midi[1]](midi[2], active_phrase=self.active_phrase,
-                                                           time_delta=message[1], midi=midi)
-        self.active_state = self.states[new_state]
+            self.active_state.actions[midi[1]](midi[2], timestamp=self.timestamp, time_delta=message[1], midi=midi)
 
     def write_phrases(self):
         for i, phrase in self.phrases.items():

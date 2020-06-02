@@ -19,13 +19,13 @@ class RecordState(State):
     def on_bank_up(self, prev_bank, cur_bank):
         print("still Unimplemented feature flag")
 
-    def on_state(self, in_data, active_phrase, back_vol):
+    def on_state(self, in_data, active_phrase):
         if active_phrase.is_overdubbing is True:
             if active_phrase.phrase.head == 0:
                 print("Finished recording force set overdubbing to play mode")
                 active_phrase.close_recording_for_loop_over()
                 self.session.active_state = self.session.play
-            sample = active_phrase.phrase.counter(in_data, back_vol=back_vol)
+            sample = active_phrase.phrase.counter(in_data, back_vol=self.back_vol)
             active_phrase.overdub.put(in_data)
             return sample
         else:

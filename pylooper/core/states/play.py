@@ -31,6 +31,6 @@ class PlayState(State):
         print("Select layer")
         self.session.active_phrase.select_phrase()
 
-    def on_state(self, in_data, active_phrase, back_vol):
-        sample = active_phrase.phrase.counter(back_vol=back_vol)
+    def on_state(self, in_data, active_phrase):
+        sample = active_phrase.phrase.counter(back_vol=self.back_vol)
         return sample + in_data

@@ -34,7 +34,7 @@ class StopState(State):
         print("setting auto start flag")
         self.auto_start_flag = True
 
-    def on_state(self, in_data, active_phrase, back_vol):
+    def on_state(self, in_data, active_phrase):
         if self.auto_start_flag is True:
             if len(self.auto_start_threshold) > 0 and np.max(in_data) > 10 and np.mean(self.auto_start_threshold) < (
                     np.max(in_data) / 2):

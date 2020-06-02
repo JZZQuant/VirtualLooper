@@ -8,6 +8,9 @@ class State(object):
         self.long_press_time = 0.2
         self.midi_bank = 0
         self.curr_program = 0
+        self.back_vol = 1
+        self.control_on = False
+        self.expression_on = False
         self.audio_writer = pyaudio.PyAudio()
         self.actions = {80: self.on_ctrl, 7: self.on_exp, 81: self.on_exp_switch, 32: self.dummy_func,
                         0: self.on_program_change}
@@ -16,20 +19,19 @@ class State(object):
         print("recieved control message")
 
     def on_ctrl(self, midi):
-        if self.session.control_on:
+        if self.control_on:
             if midi.is_short_press():
                 self.on_control(midi)
             else:
                 self.on_long_control(midi)
-        self.session.control_on = ~self.session.control_on
+        self.control_on = ~self.control_on
 
     def on_exp(self, midi):
-        self.session.back_vol = midi.value / 100.0
-        print("received exp message: %f" % self.session.back_vol)
+        self.back_vol = midi.value / 100.0
+        print("received exp message: %f" % self.back_vol)
 
     def on_exp_switch(self, midi):
         # suppress the midi off message and only recieve the on message
-        # todo : move these if clauses to midi class
         if not midi.is_short_press():
             if not self.session.expression_on:
                 if self.session.active_state.name == "Record":
@@ -46,7 +48,7 @@ class State(object):
             self.midi_bank = midi.param
         if midi.is_patch_message():
             prev_bank, prev_patch = midi.get_bank_patch(self.curr_program)
-            self.curr_program = midi.get_program_number(midi.param)
+            self.curr_program = midi.get_program_number(self.midi_bank)
             cur_bank, cur_patch = midi.get_bank_patch(self.curr_program)
             if prev_bank == cur_bank:
                 self.on_phrase_change(prev_patch, cur_patch)

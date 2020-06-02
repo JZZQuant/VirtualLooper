@@ -13,8 +13,8 @@ class AudioReader(object):
             os.makedirs("%s/phrase_%s" % (self.folder, str(phrase_id)))
         self.frames_per_buffer = 256
         self.sample_rate = 44100
-        self.channels = 2
-        self.width = 2  # must chnage with the audio format ,  2 *bytes =16 format
+        self.channels = 1
+        self.width = 2  # must change with the audio format ,  2 *bytes =16 format
         self.stream = pyaudio.PyAudio().open(format=pyaudio.paInt16, channels=self.channels, output=True,
                                              rate=self.sample_rate, input=True,
                                              frames_per_buffer=self.frames_per_buffer, stream_callback=callback)

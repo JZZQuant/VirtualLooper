@@ -15,11 +15,12 @@ class Session(object):
         self.auto_start_threshold = []
         # todo : session object mustve acccess to only active phrase rest all must be crete by looper
         self.midi = MidiDriver(midi_out, midi_in)
-        self.phrases = {1: Phrase(), 2: Phrase(), 3: Phrase(), 4: Phrase()}
+        self.midi.midi_in.set_callback(self.on_midi)
+        self.phrase_ids = list(range(1, 5))
+        self.wave_reader = AudioReader(self.callback_wrapper, self.phrase_ids)
+        self.phrases = dict(zip(self.phrase_ids, [Phrase(self.wave_reader.channels)] * 4))
         # todo : session object mustve acccess to only active state rest all must be crete by looper
         self.active_phrase = self.phrases[self.midi.active_phrase]
-        self.midi.midi_in.set_callback(self.on_midi)
-        self.wave_reader = AudioReader(self.callback_wrapper, self.phrases.keys())
         self.timestamp = 0
         self.stop = StopState(self)
         self.record = RecordState(self)

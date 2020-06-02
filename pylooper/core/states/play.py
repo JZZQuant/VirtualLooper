@@ -6,13 +6,13 @@ class PlayState(State):
         State.__init__(self, session)
         self.name = "Play"
 
-    def on_control(self, value, timestamp, time_delta, midi):
+    def on_control(self, midi):
         print("Start OverDubbing")
         self.session.active_phrase.arm_overdubbing_track()
         self.session.active_state = self.session.record
         print("Finished prepadding overdub track OverDubbing")
 
-    def on_long_control(self, value, timestamp, time_delta, midi):
+    def on_long_control(self, midi):
         print("Stop Playing")
         self.session.active_state = self.session.stop
 

@@ -2,6 +2,7 @@ import numpy as np
 import pyaudio
 
 from adapters.midi import MidiDriver
+from adapters.midi_message import MidiMessage
 from adapters.reader import AudioReader
 from core.phrase import Phrase
 from core.states.expression import ExpressionState
@@ -43,15 +44,8 @@ class Session(object):
         return processed_signal_for_output.astype(np.int16), pyaudio.paContinue
 
     def on_midi(self, message, data):
-        midi = message[0]
-        self.timestamp += message[1]
-        # todo :modify these to logger info messages
-        print("received message :%s at time %f" % (midi, self.timestamp))
-        # todo : create a midi datastrcuture and push the 'if' to that class
-        if midi[0] == 192:
-            self.active_state.on_program_change(midi[1], timestamp=self.timestamp, time_delta=message[1], midi=midi)
-        else:
-            self.active_state.actions[midi[1]](midi[2], timestamp=self.timestamp, time_delta=message[1], midi=midi)
+        midi = MidiMessage(message)
+        self.active_state.actions[midi.function](midi)
 
     def write_phrases(self):
         for i, phrase in self.phrases.items():

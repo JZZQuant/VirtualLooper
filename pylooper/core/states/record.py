@@ -6,12 +6,12 @@ class RecordState(State):
         State.__init__(self, session)
         self.name = "Record"
 
-    def on_control(self, value, timestamp, time_delta, midi):
+    def on_control(self, midi):
         print("Started Looping")
         self.session.active_phrase.close_recording_for_loop_over()
         self.session.active_state = self.session.play
 
-    def on_long_control(self, value, timestamp, time_delta, midi):
+    def on_long_control(self, midi):
         print("Extend Recording")
         self.session.active_phrase.extend_recording()
         self.session.active_state = self.session.record

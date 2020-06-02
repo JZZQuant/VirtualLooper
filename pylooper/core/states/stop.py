@@ -10,12 +10,12 @@ class StopState(State):
         self.auto_start_flag = False
         self.auto_start_threshold = []
 
-    def on_control(self, value, timestamp, time_delta, midi):
+    def on_control(self, midi):
         print("Started Recording")
         self.session.active_phrase.set_overdubbing_mode()
         self.session.active_state = self.session.record
 
-    def on_long_control(self, value, timestamp, time_delta, midi):
+    def on_long_control(self, midi):
         # todo : must go back to void state which inherits from stop state
         if self.session.active_phrase.phrase.empty():
             print("No layers recorded for current phrase")

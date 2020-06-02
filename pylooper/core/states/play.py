@@ -8,7 +8,7 @@ class PlayState(State):
 
     def on_control(self, value, timestamp, time_delta,midi):
         print("Start OverDubbing")
-        self.session.active_phrase.arm_overdubbing_track(self.session.wave_reader.frames_per_buffer)
+        self.session.active_phrase.arm_overdubbing_track()
         self.session.active_state = self.session.record
         print("Finished prepadding overdub track OverDubbing")
 
@@ -27,6 +27,10 @@ class PlayState(State):
         if layers_left == 0:
             self.session.active_state = self.session.stop
 
-    def on_bank_up(self,prev_bank, cur_bank):
+    def on_bank_up(self, prev_bank, cur_bank):
         print("Select layer")
         self.session.active_phrase.select_phrase()
+
+    def on_state(self, in_data, active_phrase, back_vol):
+        sample = active_phrase.phrase.counter(back_vol=back_vol)
+        return sample + in_data

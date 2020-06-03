@@ -6,7 +6,7 @@ from core.states import State
 class StopState(State):
     def __init__(self, session):
         State.__init__(self, session)
-        self.name = "Stop"
+        self.state_id = State.STOP
         self.auto_start_flag = False
         self.auto_start_threshold = []
 

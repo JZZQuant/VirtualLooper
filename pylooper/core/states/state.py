@@ -2,8 +2,14 @@ import pyaudio
 
 
 class State(object):
+    PLAY = "PLay"
+    RECORD = "Record"
+    STOP = "Stop"
+    EXPRESSION = "Expression"
+    VOID = "Void"
+
     def __init__(self, session):
-        self.name = "Test"
+        self.state_id = State.VOID
         self.session = session
         self.midi_bank = 0
         self.program = 0
@@ -34,7 +40,7 @@ class State(object):
         if not midi.is_short_press():
             # todo : pass active_phrase and state
             if not self.expression_on:
-                if self.session.active_state.name == "Record":
+                if self.session.active_state.state_id == "Record":
                     phrase.close_recording_for_loop_over()
                     self.session.active_state = self.session.switch
                 self.session.write_phrases()
@@ -74,4 +80,4 @@ class State(object):
         print("recieved long control message")
 
     def on_state(self, in_data, active_phrase):
-        print("recieved long control message")
+        print("inside Oon_State_call")

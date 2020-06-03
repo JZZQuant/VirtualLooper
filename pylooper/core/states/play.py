@@ -4,7 +4,7 @@ from core.states import State
 class PlayState(State):
     def __init__(self, session):
         State.__init__(self, session)
-        self.name = "Play"
+        self.state_id = State.PLAY
 
     def on_control(self, midi, phrase):
         print("Start OverDubbing")

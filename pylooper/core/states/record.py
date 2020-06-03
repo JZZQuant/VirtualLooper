@@ -4,7 +4,7 @@ from core.states import State
 class RecordState(State):
     def __init__(self, session):
         State.__init__(self, session)
-        self.name = "Record"
+        self.state_id = State.RECORD
 
     def on_control(self, midi, phrase):
         print("Started Looping")

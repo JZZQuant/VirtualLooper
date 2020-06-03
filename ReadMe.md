@@ -61,7 +61,7 @@ State machine for running the looper. Below table explains the corresponding act
 
 | State-Action  | Stop      | Record/Overdub | Play/loop | Rhythm-Switch |
 |---------------|-----------|----------------|-----------|---------------|
-| Bank UP       | AutoStart | AutoExtend(?)  |SelectLayer| SelectRhythm  |
+| Bank UP       | AutoStart | AutoStop       |SelectLayer| SelectRhythm  |
 | Bank Down     | RollnStart| RollnStop      | ClearLayer| SelectRhythm  |
 | Phrase 1-4    | ArmPhrase | RollnArmPhrase | PlayPhrase| SelectGenre   |
 | CTL           | Record    | Loop           | Record    | NewSession    |
@@ -103,10 +103,10 @@ V2:
 
 V2.5
 * auto extend
-* create an overdubbing state/void state
-* split control and long_control to different events in base class
-* code cleanup
-* testing
+* **create an overdubbing state/void state**
+* **split control and long_control to different events in base class**
+* **code cleanup**
+* **testing**
 * comments 
 * logging
 * add config file

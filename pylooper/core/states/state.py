@@ -38,7 +38,6 @@ class State(object):
     def on_exp_switch(self, midi, phrase):
         # suppress the midi off message and only recieve the on message
         if not midi.is_short_press():
-            # todo : pass active_phrase and state
             if not self.expression_on:
                 if self.session.active_state.state_id == "Record":
                     phrase.close_recording_for_loop_over()

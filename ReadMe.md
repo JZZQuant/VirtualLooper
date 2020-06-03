@@ -65,7 +65,7 @@ State machine for running the looper. Below table explains the corresponding act
 | Bank Down     | RollnStart| RollnStop      | ClearLayer| SelectRhythm  |
 | Phrase 1-4    | ArmPhrase | RollnArmPhrase | PlayPhrase| SelectGenre   |
 | CTL           | Record    | Loop           | Record    | NewSession    |
-| CTL Long      | PlayRhythm| ExtendLoop     | StopPlay  | TapTempo      |
+| CTL Long      | PlayRhythm| ExtendLoop     | StopPlay  | TapTempo(?)   |
 | Exp Pedal     | BackVol   | BackVol        | BackVol   | BackVol       |
 | Exp Switch    | SaveAll   | SaveAll        | SaveAll   | SaveAll       |      
 

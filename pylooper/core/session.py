@@ -31,12 +31,13 @@ class Session(object):
         self.active_state = self.stop
 
     def callback(self, in_data, frame_count, time_info, status):
-        array_input_fromstring = np.fromstring(in_data, dtype=np.int16)
-        processed_signal_for_output = self.active_state.on_state(array_input_fromstring, self.active_phrase)
-        return processed_signal_for_output.astype(np.int16), pyaudio.paContinue
+        output_arr = np.fromstring(in_data, dtype=np.int16)
+        output_arr = self.active_state.on_state(output_arr, self.active_phrase)
+        return output_arr.astype(np.int16), pyaudio.paContinue
 
     def on_midi(self, message, data):
         midi = MidiMessage(message)
+        # todo : each midi call must return a new state,phrase and operation essentially an active session object
         self.active_state.actions[midi.function](midi)
 
     def write_phrases(self):

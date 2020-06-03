@@ -4,8 +4,8 @@ from structures import Queue
 
 
 class Phrase(object):
-    def __init__(self, channels, buffer_rate):
-        # todo : add phrase ID as paramter and get it as return for manipulating active phrase
+    def __init__(self, phrase_id, channels, buffer_rate):
+        self.phrase_id = phrase_id
         self.is_overdubbing = False
         self.phrase = Queue()
         self.overdub = Queue()
@@ -23,7 +23,7 @@ class Phrase(object):
         self.overdub.pre_padding(self.phrase.head * [np.zeros(self.number_of_channels * self.frames_per_buffer)])
         self.is_overdubbing = True
 
-    def clear_phrase(self):
+    def clear_layer(self):
         n = len(self.layers)
         phrase_state = self.phrase_states()[self.phrase_state_index]
         print("found %d layers clearing %s from it" % (n, phrase_state))
@@ -33,10 +33,10 @@ class Phrase(object):
             active_layers = [layer.data for layer in self.layers]
             self.phrase.data = list(np.array(active_layers).sum(axis=0))
         else:
-            self.__init__(self.number_of_channels, self.frames_per_buffer)
+            self.__init__(self.phrase_id, self.number_of_channels, self.frames_per_buffer)
         return len(self.layers)
 
-    def select_phrase(self):
+    def select_layer(self):
         self.phrase_state_index = (self.phrase_state_index + 1) % (len(self.layers) + 1)
         phrase_state = self.phrase_states()[self.phrase_state_index]
         print("Current Selected Layer %s" % phrase_state)

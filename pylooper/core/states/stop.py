@@ -6,33 +6,34 @@ from core.states import State
 class StopState(State):
     def __init__(self, session):
         State.__init__(self, session)
-        self.name = "Stop"
+        self.name = State.STOP
         self.auto_start_flag = False
         self.auto_start_threshold = []
 
-    def on_control(self, midi):
+    def on_control(self, midi, phrase):
         print("Started Recording")
         self.session.active_phrase.set_overdubbing_mode()
-        self.session.active_state = self.session.record
+        return phrase.phrase_id, State.RECORD
 
-    def on_long_control(self, midi):
-        # todo : must go back to void state which inherits from stop state
+    def on_long_control(self, midi, phrase):
         if self.session.active_phrase.phrase.empty():
             print("No layers recorded for current phrase")
+            return phrase.phrase_id, self.state_id
         else:
             print("Start Playing")
-            self.session.active_state = self.session.play
+            return phrase.phrase_id, State.PLAY
 
-    def on_phrase_change(self, prev_patch, cur_patch):
+    def on_phrase_change(self, prev_patch, cur_patch, phrase):
         print("change phrase from %d to %d" % (prev_patch, cur_patch))
-        self.session.active_phrase = self.session.phrases[cur_patch]
+        return cur_patch, self.state_id
 
-    def on_bank_down(self, prev_bank, cur_bank):
+    def on_bank_down(self, prev_bank, cur_bank, phrase):
         print("will roll start in now")
 
-    def on_bank_up(self, prev_bank, cur_bank):
+    def on_bank_up(self, prev_bank, cur_bank, phrase):
         print("setting auto start flag")
         self.auto_start_flag = True
+        return phrase.phrase_id, self.state_id
 
     def on_state(self, in_data, active_phrase):
         if self.auto_start_flag is True:

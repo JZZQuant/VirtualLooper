@@ -5,7 +5,6 @@ from structures import Queue
 
 class Phrase(object):
     def __init__(self, channels, buffer_rate):
-        # todo : add phrase ID as paramter and get it as return for manipulating active phrase
         self.is_overdubbing = False
         self.phrase = Queue()
         self.overdub = Queue()

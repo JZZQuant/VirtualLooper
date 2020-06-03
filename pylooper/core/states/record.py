@@ -6,17 +6,17 @@ class RecordState(State):
         State.__init__(self, session)
         self.name = "Record"
 
-    def on_control(self, midi):
+    def on_control(self, midi, phrase):
         print("Started Looping")
-        self.session.active_phrase.close_recording_for_loop_over()
+        phrase.close_recording_for_loop_over()
         self.session.active_state = self.session.play
 
-    def on_long_control(self, midi):
+    def on_long_control(self, midi, phrase):
         print("Extend Recording")
-        self.session.active_phrase.extend_recording()
+        phrase.extend_recording()
         self.session.active_state = self.session.record
 
-    def on_bank_up(self, prev_bank, cur_bank):
+    def on_bank_up(self, prev_bank, cur_bank, phrase):
         print("still Unimplemented feature flag")
 
     def on_state(self, in_data, active_phrase):

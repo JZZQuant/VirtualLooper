@@ -14,14 +14,12 @@ from core.states.stop import StopState
 class Session(object):
     def __init__(self, midi_out, midi_in):
         self.auto_start_threshold = []
-        # todo : session object mustve acccess to only active phrase rest all must be crete by looper
         self.midi = MidiDriver(midi_out, midi_in)
         self.midi.midi_in.set_callback(self.on_midi)
         phrase_ids = list(range(1, 5))
         self.wave_reader = AudioReader(self.callback, phrase_ids)
         self.phrases = dict(
             zip(phrase_ids, [Phrase(self.wave_reader.channels, self.wave_reader.frames_per_buffer)] * 4))
-        # todo : session object mustve acccess to only active state rest all must be crete by looper
         self.active_phrase = self.phrases[self.midi.active_phrase]
         self.timestamp = 0
         self.stop = StopState(self)
@@ -37,8 +35,7 @@ class Session(object):
 
     def on_midi(self, message, data):
         midi = MidiMessage(message)
-        # todo : each midi call must return a new state,phrase and operation essentially an active session object
-        self.active_state.actions[midi.function](midi)
+        self.active_state.actions[midi.function](midi, self.active_phrase)
 
     def write_phrases(self):
         for i, phrase in self.phrases.items():

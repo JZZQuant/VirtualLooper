@@ -26,9 +26,9 @@ class RecordState(State):
                 print("Finished recording force set overdubbing to play mode")
                 active_phrase.close_recording_for_loop_over()
                 if self.auto_stop:
-                    self.session.active_state = self.session.Stop
+                    self.session.active_state = self.session.stop
                 else:
-                    self.session.active_state = self.session.Play
+                    self.session.active_state = self.session.play
             sample = active_phrase.phrase.counter(in_data, back_vol=self.back_vol)
             active_phrase.overdub.put(in_data)
             return sample

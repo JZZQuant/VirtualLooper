@@ -40,7 +40,7 @@ class StopState(State):
                 print("start auto recording")
                 self.auto_start_flag = False
                 self.auto_start_threshold = []
-                self.active_state = self.session.record
+                self.session.active_state = self.session.record
             elif np.max(in_data) > 10:
                 self.auto_start_threshold.append(np.max(in_data))
         return in_data

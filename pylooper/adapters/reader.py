@@ -6,7 +6,7 @@ import pyaudio
 
 
 class AudioReader(object):
-    def __init__(self, callback, phrase_ids, base="../../VLoop/"):
+    def __init__(self, callback, phrase_ids, base="../VLoop/"):
         self.session_id = str(uuid.uuid4())
         self.folder = base + self.session_id
         for phrase_id in phrase_ids:
@@ -21,7 +21,6 @@ class AudioReader(object):
 
     def write_layer(self, i, layer):
         file_hash = str(hash(str(layer.data[0])))
-        print("Writing layer %s from phrase %s" % (file_hash, i))
         file_name = "%s/phrase_%s/%s.wav" % (self.folder, str(i), file_hash)
         if not os.path.exists(file_name):
             with wave.open(file_name, 'wb') as wf:

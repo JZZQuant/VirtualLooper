@@ -65,7 +65,7 @@ State machine for running the looper. Below table explains the corresponding act
 | Bank Down     | RollnStart| RollnStop      | ClearLayer| SelectRhythm  |
 | Phrase 1-4    | ArmPhrase | RollnArmPhrase | PlayPhrase| SelectGenre   |
 | CTL           | Record    | Loop           | Record    | NewSession    |
-| CTL Long      | PlayRhythm| ExtendLoop     | StopPlay  | TapTempo(?)   |
+| CTL Long      | PlayRhythm| ExtendLoop     | StopPlay  | Doubletempo   |
 | Exp Pedal     | BackVol   | BackVol        | BackVol   | BackVol       |
 | Exp Switch    | SaveAll   | SaveAll        | SaveAll   | SaveAll       |      
 
@@ -102,7 +102,7 @@ V2:
 
 
 V2.5
-* auto extend
+* **auto stop**
 * **create an overdubbing state/void state**
 * **split control and long_control to different events in base class**
 * **code cleanup**

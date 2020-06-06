@@ -1,21 +1,32 @@
+import librosa
 import numpy as np
 
 from structures import Queue
 
 
 class Phrase(object):
-    def __init__(self, channels, buffer_rate):
+    def __init__(self, channels, buffer_rate, sample_rate, phrase_id):
         self.is_overdubbing = False
+        self.phrase_id = phrase_id
         self.phrase = Queue()
         self.overdub = Queue()
         self.layers = []
         self.number_of_channels = channels
         self.frames_per_buffer = buffer_rate
+        self.sample_rate = sample_rate
         self.phrase_state_index = -1
+        self.rhythm_appended = False
+        self.tempo = 120
+        self.beats = []
+        self.offset = 0
 
     def phrase_states(self):
         n = len(self.layers)
         return [list(range(n))] + [[el] for el in range(n)]
+
+    def set_tempo(self):
+        flattened_array_y = np.array(self.layers[0].data, dtype="float").flatten()
+        self.tempo, self.beats = librosa.beat.beat_track(y=flattened_array_y, sr=self.sample_rate, units="frames")
 
     def arm_overdubbing_track(self):
         print("Pre-padding records with zeros")
@@ -32,7 +43,7 @@ class Phrase(object):
             active_layers = [layer.data for layer in self.layers]
             self.phrase.data = list(np.array(active_layers).sum(axis=0))
         else:
-            self.__init__(self.number_of_channels, self.frames_per_buffer)
+            self.__init__(self.number_of_channels, self.frames_per_buffer, self.sample_rate, self.phrase_id)
         return len(self.layers)
 
     def select_phrase(self):
@@ -62,3 +73,22 @@ class Phrase(object):
     def set_overdubbing_mode(self):
         # set to overdubbing if phrase is not empty else set to first recording
         self.is_overdubbing = ~self.phrase.empty()
+
+    def get_rhythm_phrase(self, file_name):
+        loop_data, loop_sr = librosa.load(file_name)
+        loop_data = librosa.core.resample(loop_data, loop_sr, self.sample_rate)
+        rhythm_tempo, rhythm_beats = librosa.beat.beat_track(y=loop_data, sr=self.sample_rate, units="frames",
+                                                             hop_length=self.frames_per_buffer)
+        t = self.tempo
+        _arr = [t, 2 * t, 0.5 * t]
+        best_fit_tempo = _arr[np.argmin(np.abs(rhythm_tempo - np.array(_arr)))[0]]
+        loop_data = librosa.effects.time_stretch(loop_data, best_fit_tempo / rhythm_tempo)
+        print("changing tempo from %s to %s to mach base tempo %s" % (rhythm_tempo, best_fit_tempo, self.tempo))
+        # convert to 16 bit integer
+        loop_data = (loop_data[:len(np.array(self.layers[0].data).flatten())] * 32767).astype(int).reshape(-1,
+                                                                                                           self.frames_per_buffer)
+
+        rhythm_data = loop_data.tolist()
+        rhythm_layer = Queue()
+        rhythm_layer.data = rhythm_data
+        return rhythm_layer

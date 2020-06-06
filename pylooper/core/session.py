@@ -14,12 +14,17 @@ from core.states.stop import StopState
 class Session(object):
     def __init__(self, midi_out, midi_in):
         self.auto_start_threshold = []
+        self.midi_out = midi_out
+        self.midi_in = midi_in
         self.midi = MidiDriver(midi_out, midi_in)
         self.midi.midi_in.set_callback(self.on_midi)
         phrase_ids = list(range(1, 5))
         self.wave_reader = AudioReader(self.callback, phrase_ids)
+        c = self.wave_reader.channels
+        f = self.wave_reader.frames_per_buffer
+        s = self.wave_reader.sample_rate
         self.phrases = dict(
-            zip(phrase_ids, [Phrase(self.wave_reader.channels, self.wave_reader.frames_per_buffer)] * 4))
+            zip(phrase_ids, [Phrase(c, f, s, id) for id in phrase_ids]))
         self.active_phrase = self.phrases[self.midi.active_phrase]
         self.timestamp = 0
         self.stop = StopState(self)
@@ -41,5 +46,10 @@ class Session(object):
         for i, phrase in self.phrases.items():
             if len(phrase.layers) == 0:
                 pass
-            for layer in phrase.layers:
-                self.wave_reader.write_layer(i, layer)
+            else:
+                for layer in phrase.layers:
+                    self.wave_reader.write_layer(i, layer)
+
+    def reset_session(self):
+        self.write_phrases()
+        self.__init__(self.midi_out, self.midi_in)

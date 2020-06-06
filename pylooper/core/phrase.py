@@ -81,14 +81,14 @@ class Phrase(object):
                                                              hop_length=self.frames_per_buffer)
         t = self.tempo
         _arr = [t, 2 * t, 0.5 * t]
-        best_fit_tempo = _arr[np.argmin(np.abs(rhythm_tempo - np.array(_arr)))[0]]
+        best_fit_tempo = _arr[np.argmin(np.abs(rhythm_tempo - np.array(_arr)))]
         loop_data = librosa.effects.time_stretch(loop_data, best_fit_tempo / rhythm_tempo)
         print("changing tempo from %s to %s to mach base tempo %s" % (rhythm_tempo, best_fit_tempo, self.tempo))
         # convert to 16 bit integer
         loop_data = (loop_data[:len(np.array(self.layers[0].data).flatten())] * 32767).astype(int).reshape(-1,
                                                                                                            self.frames_per_buffer)
 
-        rhythm_data = loop_data.tolist()
+        rhythm_data = list(loop_data)
         rhythm_layer = Queue()
         rhythm_layer.data = rhythm_data
         return rhythm_layer

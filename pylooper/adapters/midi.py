@@ -2,13 +2,18 @@ import rtmidi
 
 
 class MidiDriver(object):
+    active_phrase = 0
+
     def __init__(self, midi_out, midi_in, active_phrase=1):
         self.midi_in = rtmidi.MidiIn().open_port(midi_in)
         self.midi_out = rtmidi.MidiOut().open_port(midi_out)
-        self.active_phrase = active_phrase
+        MidiDriver.active_phrase = active_phrase
+        self.send1()
+
+    def send1(self):
         self.midi_out.send_message([176, 0, 0])
         self.midi_out.send_message([176, 32, 0])
-        self.midi_out.send_message([192, active_phrase - 1])
+        self.midi_out.send_message([192, MidiDriver.active_phrase - 1])
 
     @staticmethod
     def get_midi_device_id(out=True):

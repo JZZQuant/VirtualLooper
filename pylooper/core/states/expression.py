@@ -34,6 +34,7 @@ class ExpressionState(State):
         self.on_bank_move(phrase, 1)
 
     def on_bank_move(self, phrase, iter):
+        # todo : audio features can be replaced with  midi ?  reintrduced double half tempo,
         self.active_loop_index = (self.active_loop_index + iter) % (len(self.active_loops))
         # print("Current Selected Layer %s" % phrase_state)
         if self.active_loop_index == 0 and phrase.rhythm_appended is True:

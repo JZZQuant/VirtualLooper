@@ -28,3 +28,4 @@ class AudioReader(object):
                 wf.setsampwidth(self.width)
                 wf.setframerate(self.sample_rate)
                 wf.writeframes(b''.join(layer.data))
+

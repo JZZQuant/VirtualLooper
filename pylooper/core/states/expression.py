@@ -9,7 +9,7 @@ class ExpressionState(State):
     def __init__(self, session):
         State.__init__(self, session)
         self.state_id = State.EXPRESSION
-        self.genres = dict(zip([1, 2, 3, 4], [x[0] for x in list(os.walk("../rhythm/"))][1:]))
+        self.genres = dict(zip([1, 2, 3, 4], [x[0] for x in list(os.walk("../groove/"))][1:5]))
         self.active_genre = "jazz"
         self.active_loops = []
         self.loop_states = []
@@ -24,7 +24,7 @@ class ExpressionState(State):
 
     def set_rhythm_tracks(self, cur_patch):
         self.active_genre = self.genres[cur_patch]
-        self.active_loops = [x[2] for x in os.walk(self.active_genre)][0]
+        self.active_loops = [x[2] for x in os.walk(self.active_genre + '/beat/')][0]
         self.loop_states = [-1] + list(range(len(self.active_loops)))
 
     def on_bank_down(self, prev_bank, cur_bank, phrase):
@@ -43,7 +43,7 @@ class ExpressionState(State):
         else:
             loop_name = self.active_loops[self.active_loop_index]
             print(loop_name)
-            rhythm_phrase = phrase.get_rhythm_phrase(self.active_genre + "/" + loop_name)
+            rhythm_phrase = phrase.get_rhythm_phrase(self.active_genre + "/beat/" + loop_name)
             if phrase.rhythm_appended is False:
                 phrase.layers.insert(0, rhythm_phrase)
                 phrase.rhythm_appended = True

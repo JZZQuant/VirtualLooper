@@ -1,5 +1,10 @@
+import tempfile
+
 import librosa
 import numpy as np
+from midi2audio import FluidSynth
+from mido import MidiFile
+from scipy.io import wavfile
 
 from structures import Queue
 
@@ -75,19 +80,22 @@ class Phrase(object):
         self.is_overdubbing = ~self.phrase.empty()
 
     def get_rhythm_phrase(self, file_name):
-        loop_data, loop_sr = librosa.load(file_name)
-        loop_data = librosa.core.resample(loop_data, loop_sr, self.sample_rate)
-        rhythm_tempo, rhythm_beats = librosa.beat.beat_track(y=loop_data, sr=self.sample_rate, units="frames",
-                                                             hop_length=self.frames_per_buffer)
-        t = self.tempo
-        _arr = [t, 2 * t, 0.5 * t]
-        best_fit_tempo = _arr[np.argmin(np.abs(rhythm_tempo - np.array(_arr)))]
-        loop_data = librosa.effects.time_stretch(loop_data, best_fit_tempo / rhythm_tempo)
-        print("changing tempo from %s to %s to mach base tempo %s" % (rhythm_tempo, best_fit_tempo, self.tempo))
-        # convert to 16 bit integer
+        mid = MidiFile(file_name)
+        midi_temp = tempfile.NamedTemporaryFile()
+        wav_temp = tempfile.NamedTemporaryFile()
+        genre = file_name.split('/')[2]
+        print("loading sound font from %s" % file_name.split(genre)[0] + genre + '/' + genre + '.sf2')
+        fs = FluidSynth(file_name.split(genre)[0] + genre + '/' + genre + '.sf2', sample_rate=self.sample_rate)
+        midi_original_tempo = 1000000 * 60 / (mid.tracks[0][5].tempo)
+        target_tempo = self.tempo
+        for note in mid.tracks[0]:
+            note.time = int(note.time * midi_original_tempo / target_tempo)
+        mid.save(midi_temp.name)
+        fs.midi_to_audio(midi_temp.name, wav_temp.name)
+        loop_sr, loop_data = wavfile.read(wav_temp.name)
+        # loop_data, loop_sr = librosa.load(wav_temp.name,duration=5,res_type='kaiser_fast')
         loop_data = (loop_data[:len(np.array(self.layers[0].data).flatten())] * 32767).astype(int).reshape(-1,
                                                                                                            self.frames_per_buffer)
-
         rhythm_data = list(loop_data)
         rhythm_layer = Queue()
         rhythm_layer.data = rhythm_data

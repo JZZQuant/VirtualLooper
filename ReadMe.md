@@ -124,3 +124,4 @@ V4:
 ### Not feasible:
 1. Incremental extend loop is not feasible as it would break overdubs discontinuous so only *2 is possible
 2. void state optional for now
+3. for mid https://github.com/nwhitehead/pyfluidsynth and https://pypi.org/project/MIDIFile/ to create a wav

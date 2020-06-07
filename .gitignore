@@ -7,3 +7,5 @@ pylooper/__pycache__/
 /rhythm/
 /notebooks/
 /VLoop/
+pylooper/**/__pycache__/
+/groove/

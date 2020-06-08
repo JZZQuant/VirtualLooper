@@ -1,3 +1,4 @@
+import glob
 import os
 
 import numpy as np
@@ -24,7 +25,8 @@ class ExpressionState(State):
 
     def set_rhythm_tracks(self, cur_patch):
         self.active_genre = self.genres[cur_patch]
-        self.active_loops = [x[2] for x in os.walk(self.active_genre + '/beat/')][0]
+        self.active_loops = [file for file in glob.glob(self.active_genre + '/beat/*.mid')]
+        print(self.active_loops)
         self.loop_states = [-1] + list(range(len(self.active_loops)))
 
     def on_bank_down(self, prev_bank, cur_bank, phrase):
@@ -43,14 +45,15 @@ class ExpressionState(State):
         else:
             loop_name = self.active_loops[self.active_loop_index]
             print(loop_name)
-            rhythm_phrase = phrase.get_rhythm_phrase(self.active_genre + "/beat/" + loop_name)
+            print(len(phrase.layers[0].data))
+            rhythm_phrase = phrase.get_rhythm_phrase(loop_name, self.active_genre)
             if phrase.rhythm_appended is False:
                 phrase.layers.insert(0, rhythm_phrase)
                 phrase.rhythm_appended = True
             else:
                 phrase.layers[0] = rhythm_phrase
         active_layers = [layer.data for layer in phrase.layers]
-        phrase.phrase.data = list(np.array(active_layers).sum(axis=0) // 2)
+        phrase.phrase.data = list(np.array(active_layers).sum(axis=0))
 
     def on_control(self, midi, phrase):
         self.session.reset_session()

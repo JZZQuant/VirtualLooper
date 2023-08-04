@@ -4,7 +4,7 @@ python-rtmidi==1.4.1
 audioread==2.1.8
 cffi==1.14.0
 decorator==4.4.2
-joblib==0.15.1
+joblib==1.2.0
 librosa==0.7.2
 llvmlite==0.32.1
 numba==0.49.1
